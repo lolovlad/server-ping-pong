@@ -39,7 +39,9 @@ class NewGoods(Hand.AbstractHandler):
             if not l.Lists().list_qr_flag[0] or not l.Lists().list_qr_flag[1] or not l.Lists().list_qr_flag[2]:
                 data_base = db.db_sql()
                 select = db.db_sql.select_db(data_base, "SELECT * FROM goods_main WHERE name = ?", (request["Goods"]))
-                select_info_neural = db.db_sql.select_db(data_base, "SELECT n.* FROM neural_goods_info n INNER JOIN goods_main g ON n.id_goods = g.id Where g.name = ?", (request["Goods"]))
+                select_info_neural = db.db_sql.select_db(data_base, "SELECT n.* FROM neural_goods_info n INNER JOIN "
+                                                                    "goods_main g ON n.id_goods = g.id Where g.name = ?"
+                                                         , (request["Goods"]))
                 network = neural.NeurlN(learning_rate=0.01, start_weight=1)
                 ser = network.predict(np.array(select_info_neural))
                 if ser > 0.8:
@@ -48,8 +50,13 @@ class NewGoods(Hand.AbstractHandler):
                     i = 5
                 else:
                     i = 4
-                db.db_sql.update_db(data_base, "UPDATE map_to_day SET id_goods = ? WHERE id_graf = ?", (select[0], i))
-                select_info = db.db_sql.select_db(data_base, "SELECT m.id_graf, m.side, m.district, m.id FROM map_to_day m INNER JOIN goods_main g ON m.id_goods = g.id WHERE g.name = ? and m.full_str = 0", (request["Goods"]))
+                #db.db_sql.select_db(data_base, "SELECT * FROM map_to_day WHERE full_str = 1 and id_graf = ?", (i))
+                db.db_sql.update_db(data_base, "UPDATE TOP(1) map_to_day SET id_goods = ? WHERE id_graf = ? "
+                                               "WHERE full = 0", (select[0], i))
+                select_info = db.db_sql.select_db(data_base, "SELECT m.id_graf, m.side, m.district, m.id FROM "
+                                                             "map_to_day m INNER JOIN goods_main g ON m.id_goods = "
+                                                             "g.id WHERE g.name = ? and m.full_str = 0",
+                                                  (request["Goods"]))
                 db.db_sql.update_db(data_base, "UPDATE map_to_day SET full_str = ? WHERE id = ?", (1, select_info[3]))
                 select_info = list(select_info)
                 select_info.insert(0, "Map")
