@@ -1,0 +1,18 @@
+from Class.Interfase.IObserver import Observer
+import json as js
+
+
+class Player(Observer):
+    def __init__(self, name, id_player, network):
+        self.__name = name
+        self.__id_player = id_player
+        self.__network = network
+
+    def __repr__(self):
+        return f"Player {self.__name}, {self.__id_player}"
+
+    def __str__(self):
+        return f"Player {self.__name}, {self.__id_player}"
+
+    def update(self, subject):
+        self.__network.send_message({"Type_message": "Event"})
