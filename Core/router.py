@@ -1,25 +1,27 @@
-from Model.Robot import Robot
+from Core.GameСreator import GameCreator
+from Model.Player import Player
 from Model.DataBase import DataBase
 from socket import *
 from threading import Thread
 from Core.Network import NetWork
 
 sock = socket()
-sock.bind(('192.168.0.104', 2510))
+sock.bind(('192.168.0.108', 2510))
 sock.listen(6)
+
+DataBase().attach(GameCreator())
 
 
 def client_core(socket_client):
     network_core = NetWork(socket_client)
     reg_message = network_core.listener()
     if reg_message["Type_Command"] is not None:
-        robot_model = Robot(reg_message["Type_Robot"], reg_message["State"], reg_message["District"], network_core)
-        DataBase().attach(robot_model)
+        user = Player(reg_message["Name_user"], reg_message["Ip_user"],  reg_message["Mmr_user"], network_core)
+        DataBase().attach(user)
     else:
         return
-    print(DataBase().get_observer())
     while True:
-        command = robot_model.network_core.listener()
+        command = user.network.listener()
         if command is not None:
             DataBase().add_list_command(command)
         else:

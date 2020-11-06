@@ -3,10 +3,12 @@ import json as js
 
 
 class Player(Observer):
-    def __init__(self, name, id_player, network):
+    def __init__(self, name, id_player, mmr, network):
         self.__name = name
         self.__id_player = id_player
-        self.__network = network
+        self.network = network
+        self.state = "search"
+        self.mmr = mmr
 
     def __repr__(self):
         return f"Player {self.__name}, {self.__id_player}"
@@ -15,4 +17,4 @@ class Player(Observer):
         return f"Player {self.__name}, {self.__id_player}"
 
     def update(self, subject):
-        self.__network.send_message({"Type_message": "Event"})
+        pass

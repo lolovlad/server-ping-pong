@@ -6,7 +6,6 @@ from Model.DataBase import DataBase
 class NetWork:
     def __init__(self, sock):
         self.__socket_main = sock
-        self.send_message({"Type_command": "Server", "Information": "LogIn"})
 
     def listener(self):
         try:
@@ -14,7 +13,8 @@ class NetWork:
             js_convert_message = loads(message)
             return js_convert_message
         except ConnectionResetError:
-            model = list(filter(lambda x: x.network_core.get_socket().getsockname() == self.__socket_main.getsockname(),
+            model = list(filter(lambda x: x.network is not None
+                                and x.network.get_socket().getsockname() == self.__socket_main.getsockname(),
                                 DataBase().get_observer()))
             DataBase().detach(model[0])
             return None

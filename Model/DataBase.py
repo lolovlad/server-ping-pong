@@ -10,6 +10,7 @@ class DataBase(Subject):
 
     def attach(self, observer):
         self.__observes.append(observer)
+        self.notify(self.__observes)
 
     def notify(self, lists):
         for observer in self.__observes:
@@ -21,10 +22,6 @@ class DataBase(Subject):
     def add_list_command(self, command):
         self.__command_list.append(command)
         self.notify(self.__command_list.pop())
-
-    def add_task(self, command):
-        self.__task_list_robot.append(command)
-        self.notify(self.__task_list_robot)
 
     def get_observer(self):
         return self.__observes

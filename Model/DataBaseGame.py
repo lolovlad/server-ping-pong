@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 
 
-class DataBase:
+class DataBaseGame:
     def __init__(self):
         self.WINDOW_WIDTH = 1024
         self.WINDOW_HEIGHT = 600
@@ -12,8 +12,8 @@ class DataBase:
         self.BUR = (0, 255, 255)
         self.RED = (255, 0, 0)
         self.is_playing = True
-        self.__position_left_paddle = ()
-        self.__position_right_paddle = ()
+        self.__position_left_paddle = (45, 300)
+        self.__position_right_paddle = (self.WINDOW_WIDTH - 55, 300)
         self.__position_ball = ()
         self.border_position = ((0, 0), (0, self.WINDOW_HEIGHT - 5), (0, 0), (self.WINDOW_WIDTH - 5, 0))
         self.border_size = ([self.WINDOW_WIDTH, 5], [self.WINDOW_WIDTH, 5],

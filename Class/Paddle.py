@@ -3,13 +3,12 @@ from pygame import USEREVENT
 from pygame import K_UP, K_DOWN, transform
 from pygame.math import Vector2
 from Model.Enemy import GameObject
-from Core.Display import Dispaly
 
 
 class Paddle(GameObject):
-    def __init__(self, start_point, size, color, speed,  min_speed, max_speed, id_paddle):
+    def __init__(self, start_point, size, color, speed,  min_speed, max_speed, id_paddle, vector):
         super().__init__(start_point, size, color, speed, min_speed, max_speed, (0, 0))
-        self.is_ball_direction = Vector2((1, 0))
+        self.is_ball_direction = Vector2(vector)
         self.energy = 33
         self.is_power_hit = False
         self.power_hit = USEREVENT + id_paddle
@@ -17,7 +16,6 @@ class Paddle(GameObject):
     def move(self):
         self.position += (self.direction * self.speed)
         self.rect.center = round(self.position.x), round(self.position.y)
-        Dispaly().render_energy_hud(self.energy, self.position.x)
 
     def reflect(self, new_dir):
         self.direction = self.direction.reflect(Vector2(new_dir))
@@ -35,7 +33,7 @@ class Paddle(GameObject):
             self.energy += en
 
     def run(self, key):
-        if key and self.energy > 0:
+        if key == "True" and self.energy > 0:
             self.speed = self.max_speed
             self.energy -= 0.5
         else:
