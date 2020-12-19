@@ -24,11 +24,14 @@ class EventSystem:
                 if i["K_z"] == "True":
                     self.__game_objects["paddle"][i["side"]][1].is_power_hit = True
                     self.__game_objects["paddle"][i["side"]][1].punch()
-                    pygame.time.set_timer(self.__game_objects["paddle"][i["side"]][1].power_hit, 100)
+                    pygame.time.set_timer(self.__game_objects["paddle"][i["side"]][1].power_hit, 1000)
+
                 if event.type == self.__database.restart:
                     self.__game_system.restart()
+
                 if event.type == self.__database.game_over:
                     self.__game_system.game_over(event.message)
+
                 for j in self.__game_objects["map"].get_energy_render():
                     if event.type == j.energy_take:
                         j.is_energy = True

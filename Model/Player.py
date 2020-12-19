@@ -18,3 +18,6 @@ class Player(Observer):
 
     def update(self, subject):
         pass
+
+    def get_name(self):
+        return self.__name

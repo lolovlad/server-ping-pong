@@ -64,6 +64,20 @@ class GameSystem:
         self.__ball.position = self.__database.get_position_ball()
         self.__ball.direction = Vector2((random.uniform(-0.5, 0.5), random.uniform(-0.2, 0.2)))
 
-    def game_over(self, i=0):
-        DataBase().is_playing = False
-        pygame.display.update()
+    def game_over(self, player_winner):
+        self.__database.is_playing = False
+        if player_winner == 1:
+            player_winner = self.__player_1.get_name()
+        else:
+            player_winner = self.__player_2.get_name()
+
+        message = {
+            "Type_message": "Server",
+            "Type_command": "Game_over",
+            "Win": player_winner
+        }
+
+        self.__player_1.network.send_message(message)
+        self.__player_2.network.send_message(message)
+        self.__player_1.state = "main_menu"
+        self.__player_2.state = "main_menu"

@@ -19,7 +19,7 @@ class DataBaseGame:
         self.border_size = ([self.WINDOW_WIDTH, 5], [self.WINDOW_WIDTH, 5],
                             [5, self.WINDOW_HEIGHT], [5, self.WINDOW_HEIGHT])
 
-        self.energy_position = ((45, 100), (45, 500), (self.WINDOW_WIDTH - 55, 100), (self.WINDOW_WIDTH - 45, 500))
+        self.energy_position = ((45, 100), (45, 500), (self.WINDOW_WIDTH - 60, 100), (self.WINDOW_WIDTH - 60, 500))
         self.energy_size = ([10, 10], [10, 10], [10, 10], [10, 10])
 
         self.score = [0, 0]

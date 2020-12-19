@@ -16,10 +16,7 @@ def game_start(player_1, player_2, id_game):
 
     while database.is_playing:
         game_system.update_game()
-
-    while True:
-        clock.tick(60)
-        game_system.game_over()
+    game_system.game_over(0)
 
 
 class GameCreator(Observer):
