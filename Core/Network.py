@@ -10,6 +10,9 @@ class NetWork:
     def listener(self):
         try:
             message = self.__socket_main.recv(1024).decode()
+            if message.count('{') > 1:
+                message = message[:message.index('}') + 1]
+            
             js_convert_message = loads(message)
             return js_convert_message
         except ConnectionResetError:
