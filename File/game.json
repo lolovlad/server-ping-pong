@@ -1,0 +1,17 @@
+{
+  "Color": {
+    "White": [255, 255, 255],
+    "Black": [0, 0, 0],
+    "Turquoise": [0, 255, 255],
+    "Red": [255, 0, 0]
+  },
+  "Position": {
+    "Left_paddle": [45, 400],
+    "Right_paddle": [969, 400],
+    "Ball": [512, 300]
+  },
+  "Window": {
+    "Width": 1024,
+    "Height": 900
+  }
+}
