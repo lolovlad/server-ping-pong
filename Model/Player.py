@@ -7,7 +7,7 @@ class Player(Observer):
         self.__name = name
         self.__id_player = id_player
         self.network = network
-        self.state = "search"
+        self.state = "login"
         self.mmr = mmr
 
     def __repr__(self):
