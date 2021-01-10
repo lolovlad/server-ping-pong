@@ -8,7 +8,8 @@ from threading import Thread
 
 def game_start(player_1, player_2, id_game):
     pygame.init()
-
+    
+    winner = 1
     clock = pygame.time.Clock()
     database = DataBaseGame()
     game_system = GameSystem(database, player_1, player_2)
@@ -16,7 +17,12 @@ def game_start(player_1, player_2, id_game):
 
     while database.is_playing:
         game_system.update_game(clock.tick(120))
-    game_system.game_over(0)
+        if database.score[0] > database.score[1]:
+            winner = 2
+        else:
+            winner = 1
+        
+    game_system.game_over(winner)
 
 
 class GameCreator(Observer):
