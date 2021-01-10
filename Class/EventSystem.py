@@ -3,6 +3,8 @@ import sys
 from pygame.locals import *
 from pygame.math import Vector2
 from Model.DataBase import DataBase
+from Class.Ball import Ball
+import random
 
 
 class EventSystem:
@@ -13,7 +15,7 @@ class EventSystem:
         pygame.time.set_timer(self.__game_objects["paddle"]["left"][1].power_hit, 0)
         pygame.time.set_timer(self.__game_objects["paddle"]["right"][1].power_hit, 0)
 
-    def update(self):
+    def update(self, c):
         event_1 = self.__game_objects["paddle"]["left"][0].network.listener()
         event_2 = self.__game_objects["paddle"]["right"][0].network.listener()
         for i in [event_1, event_2]:
@@ -41,8 +43,24 @@ class EventSystem:
             self.__paddle_hit_map(i)
             self.__paddle_hit_ball(i)
             self.__hit_energy(i)
+            
+        if self.__game_objects["timer"] <= c and self.__game_objects["timer"] >= 0:
+            for i in range(len(self.__game_objects["ball"])):
+                self.__game_objects["ball"].append(Ball((self.__game_objects["ball"][i].rect.centerx,
+                                                         self.__game_objects["ball"][i].rect.centery), [10, 10],
+                                                        self.__database.WHITE,
+                                                        5, 2, 8, (random.uniform(-0.5, 0.5), random.uniform(-0.2, 0.2))))
+                self.__game_objects["ball"].append(Ball((self.__game_objects["ball"][i].rect.centerx,
+                                                         self.__game_objects["ball"][i].rect.centery), [10, 10],
+                                                        self.__database.WHITE,
+                                                        5, 2, 8, (random.uniform(-0.5, 0.5), random.uniform(-0.2, 0.2))))                
+        self.__game_objects["timer"] -= c
+        if self.__game_objects["timer"] < -5000:
+            self.__game_objects["timer"] = 25000
+            
         self.__ball_reflect_map()
-        self.__game_objects["ball"].move()
+        for i in self.__game_objects["ball"]:
+            i.move()
         self.update_player()
 
     def __move_player(self, info):
@@ -56,14 +74,15 @@ class EventSystem:
         self.__game_objects["paddle"][info["side"]][1].move()
 
     def __ball_reflect_map(self):
-        hit = self.__game_objects["ball"].rect.collidelist(self.__game_objects["map"].get_borders()) + 1
-        if hit in (3, 4):
-            pygame.event.post(self.__database.restart_event)
-            self.__database.set_score(hit % 3, 1)
-        if hit == 2:
-            self.__game_objects["ball"].reflect((0, 1))
-        if hit == 1:
-            self.__game_objects["ball"].reflect((0, -1))
+        for i in self.__game_objects["ball"]:
+            hit = i.rect.collidelist(self.__game_objects["map"].get_borders()) + 1
+            if hit in (3, 4):
+                pygame.event.post(self.__database.restart_event)
+                self.__database.set_score(hit % 3, 1)
+            if hit == 2:
+                i.reflect((0, 1))
+            if hit == 1:
+                i.reflect((0, -1))
 
     def __paddle_hit_map(self, i):
         hit = self.__game_objects["paddle"][i["side"]][1].rect.collidelist(self.__game_objects["map"].get_borders()) + 1
@@ -75,12 +94,13 @@ class EventSystem:
             self.__game_objects["paddle"][i["side"]][1].direction = Vector2((0, 0))
 
     def __paddle_hit_ball(self, i):
-        hit = self.__game_objects["ball"].rect.colliderect(self.__game_objects["paddle"][i["side"]][1].rect)
-        if hit:
-            self.__game_objects["ball"].direction += self.__game_objects["paddle"][i["side"]][1].is_ball_direction
-
-            speed_punch = self.__game_objects["paddle"][i["side"]][1].punch()
-            self.__game_objects["ball"].set_speed(speed_punch)
+        for j in self.__game_objects["ball"]:
+            hit = j.rect.colliderect(self.__game_objects["paddle"][i["side"]][1].rect)
+            if hit:
+                j.direction += self.__game_objects["paddle"][i["side"]][1].is_ball_direction
+    
+                speed_punch = self.__game_objects["paddle"][i["side"]][1].punch()
+                j.set_speed(speed_punch)
 
     def add_game_object(self, name_object, game_object):
         self.__game_objects[name_object] = game_object
@@ -96,6 +116,15 @@ class EventSystem:
 
     def update_player(self):
         energy = self.__game_objects["map"].get_energy_render()
+        if self.__game_objects["timer"] < 0:
+            c = 'Мультиболл!!!'
+        else:
+            c = str(self.__game_objects["timer"] // 1000)
+        balls_x = []
+        balls_y = []
+        for i in self.__game_objects["ball"]:
+            balls_x.append(i.rect.centerx)
+            balls_y.append(i.rect.centery)
         message = {
             "Type_message": "Update_position",
             "Position": {
@@ -107,21 +136,17 @@ class EventSystem:
                     "energy": [self.__game_objects["paddle"]["left"][1].energy,
                                self.__game_objects["paddle"]["right"][1].energy]
                 },
-                "ball": {
-                    "x": self.__game_objects["ball"].rect.centerx,
-                    "y": self.__game_objects["ball"].rect.centery
-                },
+                "balls": {"x": balls_x, "y": balls_y},
                 "energy": {
                     "id_energy": [],
                     "flag": []
                 },
-                "score": self.__database.score
-            }
-        }
-
-        for i in range(len(energy)):
-            message["Position"]["energy"]["id_energy"].append(i)
-            message["Position"]["energy"]["flag"].append(energy[i].is_energy)
+                "score": self.__database.score, "timer": c
+            }}
+        
+        for j in range(len(energy)):
+            message["Position"]["energy"]["id_energy"].append(j)
+            message["Position"]["energy"]["flag"].append(energy[j].is_energy)
 
         self.__game_objects["paddle"]["left"][0].network.send_message(message)
         self.__game_objects["paddle"]["right"][0].network.send_message(message)
