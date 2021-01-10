@@ -9,16 +9,14 @@ sock = socket()
 sock.bind(('', 2510))
 sock.listen(6)
 
-gc = GameCreator()
-DataBase().attach(gc)
+DataBase().attach(GameCreator())
+
 
 def client_core(socket_client):
-    global gc
     network_core = NetWork(socket_client)
     reg_message = network_core.listener()
     if reg_message["Type_Command"] is not None:
         user = Player(reg_message["Name_user"], reg_message["Ip_user"],  reg_message["Mmr_user"], network_core)
-        gc.colors.append(reg_message["Color"])
         DataBase().attach(user)
     else:
         return
