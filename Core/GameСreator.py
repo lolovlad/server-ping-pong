@@ -15,7 +15,7 @@ def game_start(player_1, player_2, id_game):
     game_system.game_init()
 
     while database.is_playing:
-        game_system.update_game()
+        game_system.update_game(clock.tick(120))
     game_system.game_over(0)
 
 
