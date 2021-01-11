@@ -9,14 +9,20 @@ from threading import Thread
 def game_start(player_1, player_2, id_game):
     pygame.init()
 
+    winner = 1
     clock = pygame.time.Clock()
     database = DataBaseGame()
+    database.is_playing = True
     game_system = GameSystem(database, player_1, player_2)
     game_system.game_init()
 
     while database.is_playing:
         game_system.update_game()
-    game_system.game_over(0)
+        if database.score[0] > database.score[1]:
+            winner = 2
+        else:
+            winner = 1
+    game_system.game_over(winner)
 
 
 class GameCreator(Observer):
@@ -33,6 +39,8 @@ class GameCreator(Observer):
             if len(new_player) > 1:
                 new_player[0].state = "in_game"
                 new_player[1].state = "in_game"
+                if len(self.colors) == 4:
+                    self.colors = self.colors[2:]
                 new_player[0].network.send_message({"Type_message": "Server", "Type_command": "Started_game",
                                                     "Side": "left", "Color": self.colors[0], "EnemyColor": self.colors[1]})
                 new_player[1].network.send_message({"Type_message": "Server", "Type_command": "Started_game",
