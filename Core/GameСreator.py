@@ -12,6 +12,7 @@ def game_start(player_1, player_2, id_game):
     winner = 1
     clock = pygame.time.Clock()
     database = DataBaseGame()
+    database.is_playing = True
     game_system = GameSystem(database, player_1, player_2)
     game_system.game_init()
 
@@ -21,7 +22,6 @@ def game_start(player_1, player_2, id_game):
             winner = 2
         else:
             winner = 1
-        
     game_system.game_over(winner)
 
 
