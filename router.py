@@ -17,6 +17,10 @@ def client_core(socket_client):
     reg_message = network_core.listener()
     if reg_message["Type_Command"] is not None:
         user = Player(reg_message["Name_user"], reg_message["Ip_user"],  reg_message["Mmr_user"], network_core)
+        if len(DataBase().get_observer()) > 2:
+            for i in DataBase().get_observer():
+                DataBase().detach(i)
+            DataBase().attach(GameCreator())
         DataBase().attach(user)
     else:
         return
