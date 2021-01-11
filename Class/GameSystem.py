@@ -7,6 +7,7 @@ from Class.Map import Map
 from Class.EventSystem import EventSystem
 from Model.DataBase import DataBase
 import random
+from Class.Config import Config
 
 
 class GameSystem:
@@ -26,23 +27,24 @@ class GameSystem:
         self.__player_2 = player_2
 
     def game_init(self):
-        self.__main_display = pygame.display.set_mode((self.__database.WINDOW_WIDTH,
-                                                       self.__database.WINDOW_HEIGHT + self.__database.DISPLAY_HEIGHT),
-                                                      0, 32)
+        config = Config("game.json")
+        config.load()
+        self.__main_display = pygame.display.set_mode((config.get_window("Width"), config.get_window("Height")), 0, 32)
 
-        self.__database.set_position_ball((self.__main_display.get_rect().centerx,
-                                           self.__main_display.get_rect().centery - self.__database.DISPLAY_HEIGHT))
+        self.__database.set_position_paddles(config.get_position("Left_paddle"), config.get_position("Right_paddle"))
 
-        self.__paddle_left = Paddle(self.__database.get_position_paddles()[0], [10, 100],
-                                    self.__database.WHITE, 4, 4, 13, 1, (1, 0))
+        self.__database.set_position_ball(config.get_position("Ball"))
 
-        self.__paddle_right = Paddle(self.__database.get_position_paddles()[1], [10, 100],
-                                     self.__database.WHITE, 4, 4, 13, 2, (-1, 0))
+        self.__paddle_left = Paddle(config.get_position("Left_paddle"), [10, 100],
+                                    config.get_color("White"), 4, 4, 13, 1, (1, 0))
 
-        self.__ball = Ball(self.__database.get_position_ball(), [10, 10], self.__database.WHITE,
+        self.__paddle_right = Paddle(config.get_position("Right_paddle"), [10, 100],
+                                     config.get_color("White"), 4, 4, 13, 2, (-1, 0))
+
+        self.__ball = Ball(self.__database.get_position_ball(), [10, 10], config.get_color("White"),
                            5, 2, 8, (random.uniform(-0.5, 0.5), random.uniform(-0.2, 0.2)))
-        self.__map = Map(self.__database.RED, self.__database.border_position, self.__database.border_size,
-                         self.__database.BUR, self.__database.energy_position, self.__database.energy_size)
+
+        self.__map = Map(config.get_color("Red"), config.get_color("Turquoise"))
 
         self.__event_system = EventSystem({"paddle": {"left": [self.__player_1, self.__paddle_left],
                                                       "right": [self.__player_2, self.__paddle_right]},
@@ -53,6 +55,9 @@ class GameSystem:
         self.__event_system.update()
 
     def restart(self):
+        config = Config("game.json")
+        config.load()        
+        self.__timer = 25000    
         self.__paddle_left.energy = 33
         self.__paddle_left.position = self.__database.get_position_paddles()[0]
         self.__paddle_left.direction = (0, 0)
@@ -61,8 +66,12 @@ class GameSystem:
         self.__paddle_right.position = self.__database.get_position_paddles()[1]
         self.__paddle_right.direction = (0, 0)
         self.__paddle_right.is_power_hit = False
-        self.__ball.position = self.__database.get_position_ball()
-        self.__ball.direction = Vector2((random.uniform(-0.5, 0.5), random.uniform(-0.2, 0.2)))
+        self.__ball = Ball(self.__database.get_position_ball(), [10, 10], config.get_color("White"),
+                           5, 2, 8, (random.uniform(-0.5, 0.5), random.uniform(-0.2, 0.2)))
+        self.__event_system = EventSystem({"paddle": {"left": [self.__player_1, self.__paddle_left],
+                                                      "right": [self.__player_2, self.__paddle_right]},
+                                           "ball": self.__ball, "map": self.__map}, self,
+                                          self.__database)
 
     def game_over(self, player_winner):
         self.__database.is_playing = False
