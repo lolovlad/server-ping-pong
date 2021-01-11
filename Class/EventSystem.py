@@ -5,6 +5,7 @@ from pygame.math import Vector2
 from Model.DataBase import DataBase
 from Class.Ball import Ball
 import random
+from Class.Config import Config
 
 
 class EventSystem:
@@ -45,14 +46,16 @@ class EventSystem:
             self.__hit_energy(i)
             
         if self.__game_objects["timer"] <= c and self.__game_objects["timer"] >= 0:
+            config = Config("game.json")
+            config.load()            
             for i in range(len(self.__game_objects["ball"])):
                 self.__game_objects["ball"].append(Ball((self.__game_objects["ball"][i].rect.centerx,
                                                          self.__game_objects["ball"][i].rect.centery), [10, 10],
-                                                        self.__database.WHITE,
+                                                        config.get_color("White"),
                                                         5, 2, 8, (random.uniform(-0.5, 0.5), random.uniform(-0.2, 0.2))))
                 self.__game_objects["ball"].append(Ball((self.__game_objects["ball"][i].rect.centerx,
                                                          self.__game_objects["ball"][i].rect.centery), [10, 10],
-                                                        self.__database.WHITE,
+                                                        config.get_color("White"),
                                                         5, 2, 8, (random.uniform(-0.5, 0.5), random.uniform(-0.2, 0.2))))                
         self.__game_objects["timer"] -= c
         if self.__game_objects["timer"] < -5000:
