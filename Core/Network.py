@@ -19,6 +19,7 @@ class NetWork:
             model = list(filter(lambda x: x.network is not None
                                 and x.network.get_socket().getsockname() == self.__socket_main.getsockname(),
                                 DataBase().get_observer()))
+            print(model)
             DataBase().detach(model[0])
             return None
 

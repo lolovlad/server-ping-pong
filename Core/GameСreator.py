@@ -8,7 +8,6 @@ from threading import Thread
 
 def game_start(player_1, player_2, id_game):
     pygame.init()
-    
     winner = 1
     clock = pygame.time.Clock()
     database = DataBaseGame()
@@ -29,18 +28,23 @@ class GameCreator(Observer):
     def __init__(self):
         self.network = None
         self.id_game = 0
+        self.colors = []
 
     def update(self, subject):
         if type(subject) == list:
             new_player = subject[1:]
-            print(new_player, "eee")
+            print(new_player)
+
             new_player = sorted(new_player, key=lambda x: x.mmr and x.state == "search")
             if len(new_player) > 1:
                 new_player[0].state = "in_game"
                 new_player[1].state = "in_game"
+
+                if len(self.colors) > 2:
+                    self.colors = self.colors[-2:]
                 new_player[0].network.send_message({"Type_message": "Server", "Type_command": "Started_game",
-                                                    "Side": "left"})
+                                                    "Side": "left", "Color": self.colors[0], "EnemyColor": self.colors[1]})
                 new_player[1].network.send_message({"Type_message": "Server", "Type_command": "Started_game",
-                                                    "Side": "right"})
+                                                    "Side": "right", "Color": self.colors[1], "EnemyColor": self.colors[0]})
                 Thread(target=game_start, args=(new_player[0], new_player[1], self.id_game), daemon=True).start()
                 self.id_game += 1

@@ -9,10 +9,12 @@ sock = socket()
 sock.bind(('', 2510))
 sock.listen(6)
 
-DataBase().attach(GameCreator())
+gc = GameCreator()
+DataBase().attach(gc)
 
 
 def client_core(socket_client):
+    global gc
     network_core = NetWork(socket_client)
     reg_message = network_core.listener()
     if reg_message["Type_Command"] is not None:
@@ -20,7 +22,8 @@ def client_core(socket_client):
         if len(DataBase().get_observer()) > 2:
             for i in DataBase().get_observer():
                 DataBase().detach(i)
-            DataBase().attach(GameCreator())
+            DataBase().attach(gc)        
+        gc.colors.append(reg_message["Color"])
         DataBase().attach(user)
     else:
         return
