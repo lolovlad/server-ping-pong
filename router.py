@@ -12,6 +12,7 @@ sock.listen(6)
 gc = GameCreator()
 DataBase().attach(gc)
 
+
 def client_core(socket_client):
     global gc
     network_core = NetWork(socket_client)
