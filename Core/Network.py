@@ -10,15 +10,16 @@ class NetWork:
     def listener(self):
         try:
             message = self.__socket_main.recv(1024).decode()
-            if message.count('{') > 1:
-                message = message[:message.index('}') + 1]
-            
-            js_convert_message = loads(message)
-            return js_convert_message
+            try:
+                js_convert_message = loads(message)
+                return js_convert_message
+            except:
+                return loads('{"K_z": "False", "K_up": "False", "K_down": "False", "K_lshift": "False", "side": "right"}')
         except ConnectionResetError:
             model = list(filter(lambda x: x.network is not None
                                 and x.network.get_socket().getsockname() == self.__socket_main.getsockname(),
                                 DataBase().get_observer()))
+            print(model)
             DataBase().detach(model[0])
             return None
 
