@@ -6,17 +6,24 @@ from threading import Thread
 from Core.Network import NetWork
 
 sock = socket()
-sock.bind(('192.168.0.108', 2510))
+sock.bind(('', 2510))
 sock.listen(6)
 
-DataBase().attach(GameCreator())
+gc = GameCreator()
+DataBase().attach(gc)
 
 
 def client_core(socket_client):
+    global gc
     network_core = NetWork(socket_client)
     reg_message = network_core.listener()
     if reg_message["Type_Command"] is not None:
         user = Player(reg_message["Name_user"], reg_message["Ip_user"],  reg_message["Mmr_user"], network_core)
+        if len(DataBase().get_observer()) > 2:
+            for i in DataBase().get_observer():
+                DataBase().detach(i)
+            DataBase().attach(gc)        
+        gc.colors.append(reg_message["Color"])
         DataBase().attach(user)
     else:
         return
